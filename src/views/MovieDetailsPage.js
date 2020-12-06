@@ -1,70 +1,85 @@
-import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
-import Axios from 'axios';
-import { Link, Route, Switch } from 'react-router-dom';
-import Cast from './Cast';
-import Reviews from './Reviews.js';
-// import { render } from "@testing-library/react";
+import React, { Component, lazy } from 'react';
+// import Reviews from '../comonent/Reviews/Reviews.js';
+// import Cast from '../comonent/Cast/Cast.js';
+import { Route, Switch, NavLink, withRouter } from 'react-router-dom';
+import { fetchDetails } from '../service/serviceFetch.js';
+import routes from '../service/routes';
+import MoviePreview from '../comonent/MoviePreview/MoviePreview.js';
+import style from './MovieDetailsPage.module.css';
 
-export default class MovieDetailsPage extends Component {
+const Cast = lazy(() =>
+  import('../comonent/Cast/Cast.js' /* webpackChunkName: "cast-page" */),
+);
+const Reviews = lazy(() =>
+  import(
+    '../comonent/Reviews/Reviews.js' /* webpackChunkName: "reviews-page" */
+  ),
+);
+
+class MovieDetailsPage extends Component {
   state = {
-    page: null,
+    id: '',
+    genres: [],
+    release_date: '',
+    overview: '',
+    vote_average: 0,
+    poster_path: '',
+    title: '',
+    original_title: '',
+    name: '',
   };
-  async componentDidMount() {
-    const response = await Axios.get(
-      `https://api.themoviedb.org/3/movie/${this.props.match.params.movieId}?api_key=401d61f37c17d956a98039a1a0734109&language=en-US`,
-    );
-    // console.log(response.data.poster_path);
-    this.setState({ page: response.data });
-    return;
+
+  componentDidMount() {
+    const { moviesId } = this.props.match.params;
+    fetchDetails(moviesId).then(data => {
+      this.setState({ ...data });
+    });
   }
 
+  handleGoback = () => {
+    const { location, history } = this.props;
+    if (location.state && location.state.from) {
+      history.push(location.state.from);
+      console.log('step1');
+      console.log(location.state.from);
+      return;
+    }
+    console.log('step2');
+    history.push(routes.home);
+  };
+
   render() {
-    // console.log(this.state.page);
     return (
       <>
-        {this.state.page && (
-          <div>
-            <div>
-              <Link to="/">Go Back</Link>
-            </div>
-            <img
-              src={`https://image.tmdb.org/t/p/w300${this.state.page.poster_path}`}
-              alt=""
-            />
-            <h1>
-              {this.state.page.title}({this.state.page.release_date})
-            </h1>
-            <h2>Overview</h2>
-            <p>{!this.state.page.overview && 'опис відсутній'}</p>
-            <h2>Genres</h2>
-            <p>EBSENT(відсутній)</p>
-            <p>Addition information</p>
+        <button type="button" onClick={this.handleGoback} className={style.btn}>
+          Go back
+        </button>
 
-            <ul>
-              <li>
-                <Link to={`${this.props.match.url}/cast`}>Cast</Link>
-              </li>
-              <li>
-                <Link to={`${this.props.match.url}/revievs`}>Revievs</Link>
-              </li>
-            </ul>
-
-            <Switch>
-              <Route
-                exact
-                path={`${this.props.match.path}/:revievs`}
-                render={props => <Reviews {...props} id={this.state.page.id} />}
-              />
-              <Route
-                exact
-                path={`${this.props.match.path}/:cast`}
-                render={props => <Cast {...props} id={this.state.page.id} />}
-              />
-            </Switch>
-          </div>
-        )}
+        <MoviePreview
+          genres={this.state.genres}
+          release_date={this.state.release_date}
+          overview={this.state.overview}
+          vote_average={this.state.vote_average}
+          poster_path={this.state.poster_path}
+          title={this.state.title}
+          original_title={this.state.original_title}
+          name={this.state.name}
+        />
+        <p>Additional information</p>
+        <ul key={this.state.id}>
+          <li>
+            <NavLink to={`${this.props.match.url}/cast`}>Cast</NavLink>
+          </li>
+          <li>
+            <NavLink to={`${this.props.match.url}/reviews`}>Reviews</NavLink>
+          </li>
+        </ul>
+        <Switch>
+          <Route path={routes.cast} component={Cast} />
+          <Route path={routes.reviews} component={Reviews} />
+        </Switch>
       </>
     );
   }
 }
+export default withRouter(MovieDetailsPage);

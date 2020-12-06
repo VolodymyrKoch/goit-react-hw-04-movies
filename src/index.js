@@ -1,14 +1,15 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
-// import './index.css';
 import './bases.css';
-import App from './App.js';
+import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <Suspense fallback={<div>Загрузка</div>}>
+        <App />
+      </Suspense>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root'),

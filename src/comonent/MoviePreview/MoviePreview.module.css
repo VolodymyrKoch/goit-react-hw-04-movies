@@ -1,0 +1,6 @@
+.card {
+  display: flex;
+}
+.cardImage {
+  margin-right: 30px;
+}

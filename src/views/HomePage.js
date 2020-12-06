@@ -1,29 +1,35 @@
 import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
-import Axios from 'axios';
-import { Link } from 'react-router-dom';
-// import { render } from "@testing-library/react";
+import { fetchTrending } from '../service/serviceFetch.js';
+import { NavLink } from 'react-router-dom';
 
-export default class HomePage extends Component {
+class HomePage extends Component {
   state = {
-    movies: [],
+    data: [],
   };
-  async componentDidMount() {
-    const response = await Axios.get(
-      'https://api.themoviedb.org/3/trending/all/day?api_key=401d61f37c17d956a98039a1a0734109',
-    );
-    this.setState({ movies: response.data.results });
+  componentDidMount() {
+    fetchTrending().then(data => {
+      this.setState({ data: data.results });
+    });
   }
-
   render() {
-    return (
+      return (
       <>
+        <h1>Trending today</h1>
         <ul>
-          {this.state.movies.map(movi => (
-            <li key={movi.id}>
-              <Link to={`${this.props.match.url}movies/${movi.id}`}>
-                {movi.title || movi.name}
-              </Link>
+          {this.state.data.map(film => (
+            <li key={film.id}>
+              <NavLink
+                to={{
+                  pathname: `/movies/${film.id}`,
+                 
+                }}
+              >
+                {film.original_name ||
+                  film.name ||
+                  film.original_title ||
+                  film.title}
+                {}
+              </NavLink>
             </li>
           ))}
         </ul>
@@ -31,3 +37,5 @@ export default class HomePage extends Component {
     );
   }
 }
+
+export default HomePage;

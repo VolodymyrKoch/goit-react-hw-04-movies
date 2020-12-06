@@ -1,24 +1,40 @@
-// import React, { Component } from 'react';
-import React from 'react';
+import React, { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
-
 import HomePage from './views/HomePage.js';
-// import HomeView from './views/HomeView.js';
-import NotFoundViews from './views/NotFoundView.js';
-// import Cast from './views/Cast.js';
-// import Reviews from './views/Reviews.js';
-import MoviesPage from './views/MoviesPage.js';
-import MovieDetailsPage from './views/MovieDetailsPage.js';
+// import MoviesPage from './views/MoviesPage.js';
+// import MovieDetailsPage from './views/MovieDetailsPage.js';
+// import NotFoundView from './views/NotFoundView.js';
+import routes from './service/routes.js';
+import AppBar from './comonent/AppBar/AppBar.js';
 
-const App = () => (
-  <Switch>
-    <Route exact path="/" component={HomePage} />
-    <Route exact path="/movies" component={MoviesPage} />
-    <Route path="/movies/:movieId" component={MovieDetailsPage} />
-    {/* <Route exact path="/movies/movieId/cast" component={Cast} />
-    <Route exact path="/movies/:movieId/reviews" component={Reviews} /> */}
-    <Route component={NotFoundViews} />
-  </Switch>
+import './App.css';
+
+const MovieDetailsPage = lazy(() =>
+  import(
+    './views/MovieDetailsPage.js' /* webpackChunkName: "movie-details-page" */
+  ),
 );
+const MoviesPage = lazy(() =>
+  import('./views/MoviesPage.js' /* webpackChunkName: "movie-page" */),
+);
+const NotFoundView = lazy(() =>
+  import(
+    './views/NotFoundView.js' /* webpackChunkName: "not-found-view-page" */
+  ),
+);
+function App() {
+  return (
+    <>
+      <AppBar />
+      <Switch>
+        <Route exact path={routes.home} component={HomePage} />
+        <Route exact path={routes.movies} component={MoviesPage} />
+        <Route path={routes.movieDetails} component={MovieDetailsPage} />
+
+        <Route component={NotFoundView} />
+      </Switch>
+    </>
+  );
+}
 
 export default App;

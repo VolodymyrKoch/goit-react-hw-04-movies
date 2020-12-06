@@ -1,0 +1,25 @@
+
+.navbar {
+  display: flex;
+  list-style: none;
+}
+.navbarItem {
+  margin-right: 50px;
+}
+.navbarItem:not(:last-child) {
+  margin-right: 50px;
+}
+
+.navLink {
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.navLink:visited,
+.navLink:link {
+  color: #212121;
+}
+
+.navLinkActive:visited,
+.navLinkActive:link {
+  color: rgb(85, 255, 0);
+}
